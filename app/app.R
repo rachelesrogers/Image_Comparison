@@ -15,7 +15,7 @@ ui <- fluidPage(
                         min = 40,
                         max = 150,
                         value = 100),
-            selectInput("clothes_choice", "Select Outfit:", choices=c("defendant", "forensic scientist"))
+            selectInput("clothes_choice", "Select Outfit:", choices=c("defendant", "forensic_scientist"))
         ),
 
         # Show a plot of the generated distribution
@@ -32,10 +32,11 @@ server <- function(input, output) {
 
     output$characterPlot <- renderImage({
       
-      clothes_path <- paste0("www/",input$clothes_choice,"_skin.png")
+      clothes_path_skin <- paste0("www/",input$clothes_choice,"_skin.png")
+      clothes_path <- paste0("www/",input$clothes_choice,"_clothes.png")
       
-      clothes_skin <- image_read("www/defendant_skin.png")
-      clothes <- image_read("www/defendant_clothes.png")
+      clothes_skin <- image_read(clothes_path_skin)
+      clothes <- image_read(clothes_path)
       
       clothes_skin <- image_modulate(clothes_skin, brightness= input$skin)
       head_skin <- image_modulate(head_skin, brightness= input$skin)
