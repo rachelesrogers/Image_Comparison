@@ -15,7 +15,10 @@ ui <- fluidPage(
                         min = 40,
                         max = 150,
                         value = 100),
-            selectInput("clothes_choice", "Select Outfit:", choices=c("defendant", "forensic_scientist"))
+            selectInput("clothes_choice", "Select Outfit:", 
+                        choices=c("defendant", "forensic_scientist", "judge")),
+            selectInput("head_choice", "Select Head:", 
+                        choices=c("1", "2"))
         ),
 
         # Show a plot of the generated distribution
@@ -27,10 +30,13 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-  head_skin <- image_read("www/head1_skin.png")
-  head <- image_read("www/head1.png")
-
     output$characterPlot <- renderImage({
+      
+      head_path_skin <- paste0("www/head",input$head_choice,"_skin.png")
+      head_path <-paste0("www/head",input$head_choice,".png")
+      
+      head_skin <- image_read(head_path_skin)
+      head <- image_read(head_path)
       
       clothes_path_skin <- paste0("www/",input$clothes_choice,"_skin.png")
       clothes_path <- paste0("www/",input$clothes_choice,"_clothes.png")
