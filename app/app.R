@@ -61,7 +61,7 @@ server <- function(input, output) {
       
       list(src = tmpfile, contentType = "image/png")
       
-    })
+    }, deleteFile = TRUE)
 }
 
 # Run the application 
