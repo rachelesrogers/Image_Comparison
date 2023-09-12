@@ -51,13 +51,15 @@ server <- function(input, output) {
       
       combined <- image_mosaic(img)
       
-      # image_write(combined, path="www/final.png", format="png")
+      tmpfile <- image_write(combined, tempfile(fileext='png'), format="png")
       # 
       # img(src='final.png')
       
-      print(combined)
+      # print(combined)
       
       # image_write(combined, format="png")
+      
+      list(src = tmpfile, contentType = "image/png")
       
     })
 }
