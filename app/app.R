@@ -49,7 +49,7 @@ server <- function(input, output) {
       
       img <- c(clothes_skin, clothes, head_skin, head)
       
-      combined <- image_mosaic(img)
+      combined <- image_flatten(img)
       
       tmpfile <- image_write(combined, tempfile(fileext='png'), format="png")
       # 
