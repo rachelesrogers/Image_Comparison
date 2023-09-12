@@ -52,13 +52,7 @@ server <- function(input, output) {
       combined <- image_flatten(img)
       
       tmpfile <- image_write(combined, tempfile(fileext='png'), format="png")
-      # 
-      # img(src='final.png')
-      
-      # print(combined)
-      
-      # image_write(combined, format="png")
-      
+
       list(src = tmpfile, contentType = "image/png")
       
     }, deleteFile = TRUE)
