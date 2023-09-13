@@ -15,6 +15,16 @@ ui <- fluidPage(
                         min = 40,
                         max = 150,
                         value = 100),
+            sliderInput("eyes",
+                        "Eye Hue:",
+                        min = 0,
+                        max = 200,
+                        value = 100),
+            sliderInput("eye_bright",
+                        "Eye Brightness:",
+                        min = 40,
+                        max = 150,
+                        value = 100),
             selectInput("clothes_choice", "Select Outfit:", 
                         choices=c("defendant", "forensic_scientist", "police",
                                   "judge", "analyst","inmate", "lawyer")),
@@ -33,9 +43,11 @@ ui <- fluidPage(
 server <- function(input, output) {
     output$characterPlot <- renderImage({
       
+      head_path_eyes <- paste0("www/head",input$head_choice,"_eyes.png")
       head_path_skin <- paste0("www/head",input$head_choice,"_skin.png")
       head_path <-paste0("www/head",input$head_choice,".png")
       
+      head_eyes <- image_read(head_path_eyes)
       head_skin <- image_read(head_path_skin)
       head <- image_read(head_path)
       
@@ -45,10 +57,11 @@ server <- function(input, output) {
       clothes_skin <- image_read(clothes_path_skin)
       clothes <- image_read(clothes_path)
       
+      head_eyes <- image_modulate(head_eyes, hue=input$eyes, brightness=input$eye_bright)
       clothes_skin <- image_modulate(clothes_skin, brightness= input$skin)
       head_skin <- image_modulate(head_skin, brightness= input$skin)
       
-      img <- c(clothes_skin, clothes, head_skin, head)
+      img <- c(clothes_skin, clothes, head_skin, head, head_eyes)
       
       combined <- image_flatten(img)
       
