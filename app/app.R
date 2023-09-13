@@ -16,7 +16,8 @@ ui <- fluidPage(
                         max = 150,
                         value = 100),
             selectInput("clothes_choice", "Select Outfit:", 
-                        choices=c("defendant", "forensic_scientist", "judge", "analyst","inmate")),
+                        choices=c("defendant", "forensic_scientist", "police",
+                                  "judge", "analyst","inmate", "lawyer")),
             selectInput("head_choice", "Select Head:", 
                         choices=c("1", "2"))
         ),
