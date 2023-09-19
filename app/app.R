@@ -42,9 +42,9 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
-  hand_location <- data.frame("character"=c("defendant", "scientist", "judge"), 
-                              "x1"=c(136, NA, 147), "y1"=c(180, NA, 195),
-                              "x2"=c(60, NA, 44),"y2"=c(188, NA, 197))
+  hand_location <- data.frame("character"=c("defendant", "scientist", "judge", "analyst"), 
+                              "x1"=c(136, NA, 147, 131), "y1"=c(180, NA, 195, 184),
+                              "x2"=c(60, NA, 44, 61),"y2"=c(188, NA, 197, 183))
   
     output$characterPlot <- renderImage({
       
@@ -91,6 +91,7 @@ server <- function(input, output) {
       img <- c(body_magic, head_magic)
       
       combined <- image_flatten(img)
+      print(combined)
       
       tmpfile <- image_write(combined, tempfile(fileext='png'), format="png")
 
