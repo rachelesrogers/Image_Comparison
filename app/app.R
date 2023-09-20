@@ -12,7 +12,7 @@ ui <- fluidPage(
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
-            colourInput("skin",
+            colourpicker::colourInput("skin",
                         "Skin Tone:",
                         "#bf8448"),
             # sliderInput("eyes",
@@ -42,43 +42,24 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
-  hand_location <- data.frame("character"=c("defendant", "scientist", "judge", "analyst"), 
-                              "x1"=c(136, NA, 147, 131), "y1"=c(180, NA, 195, 184),
-                              "x2"=c(60, NA, 44, 61),"y2"=c(188, NA, 197, 183))
+  hand_location <- data.frame("character"=c("defendant", "scientist", "judge", "analyst", "inmate",
+                                            "lawyer"), 
+                              "x1"=c(298, NA, 306, 273, NA, NA), "y1"=c(375, NA, 406, 383, NA, NA),
+                              "x2"=c(125, NA, 92, 127, NA, NA),"y2"=c(392, NA, 410, 381, NA, NA))
   
     output$characterPlot <- renderImage({
-      
-      # head_path_eyes <- paste0("www/head",input$head_choice,"_eyes.png")
-      # head_path_skin <- paste0("www/head",input$head_choice,"_skin.png")
-      # head_path <-paste0("www/head",input$head_choice,".png")
-      # 
-      # head_eyes <- image_read(head_path_eyes)
-      # head_skin <- image_read(head_path_skin)
-      # head <- image_read(head_path)
-      # 
-      # clothes_path_skin <- paste0("www/",input$clothes_choice,"_skin.png")
-      # clothes_path <- paste0("www/",input$clothes_choice,"_clothes.png")
-      # 
-      # clothes_skin <- image_read(clothes_path_skin)
-      # clothes <- image_read(clothes_path)
-      # 
-      # head_eyes <- image_modulate(head_eyes, hue=input$eyes, brightness=input$eye_bright)
-      # clothes_skin <- image_modulate(clothes_skin, brightness= input$skin)
-      # head_skin <- image_modulate(head_skin, brightness= input$skin)
-      # 
-      # img <- c(clothes_skin, clothes, head_skin, head, head_eyes)
       
       head_path <- paste0("www/head",input$head_choice,".svg")
       body_path <- paste0("www/",input$clothes_choice,".svg")
       
-      head_image <- rsvg_raw(head_path)
+      head_image <- rsvg_raw(head_path, width=400)
       head_magic <- image_read(head_image)
       head_magic <- image_fill(head_magic, 'none', point=geometry_point(5,5), fuzz=20)
-      head_magic <- image_fill(head_magic, input$skin, point=geometry_point(87,77), fuzz=10)
+      head_magic <- image_fill(head_magic, input$skin, point=geometry_point(187,177), fuzz=10)
       
       body_hands <- hand_location[hand_location$character==input$clothes_choice,]
       
-      body_image <- rsvg_raw(body_path)
+      body_image <- rsvg_raw(body_path, width=400)
       body_magic <- image_read(body_image)
       body_magic <- image_fill(body_magic, 'none', point=geometry_point(5,5), fuzz=20)
       if (!is.na(body_hands$x1) & !is.na(body_hands$y1)){
@@ -91,6 +72,7 @@ server <- function(input, output) {
       img <- c(body_magic, head_magic)
       
       combined <- image_flatten(img)
+      
       print(combined)
       
       tmpfile <- image_write(combined, tempfile(fileext='png'), format="png")
