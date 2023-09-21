@@ -52,15 +52,13 @@ server <- function(input, output) {
       head_path <- paste0("www/head",input$head_choice,".svg")
       body_path <- paste0("www/",input$clothes_choice,".svg")
       
-      head_image <- rsvg_raw(head_path, width=400)
-      head_magic <- image_read(head_image)
+      head_magic <- image_read_svg(head_path, width=400)
       head_magic <- image_fill(head_magic, 'none', point=geometry_point(5,5), fuzz=20)
       head_magic <- image_fill(head_magic, input$skin, point=geometry_point(187,177), fuzz=10)
       
       body_hands <- hand_location[hand_location$character==input$clothes_choice,]
       
-      body_image <- rsvg_raw(body_path, width=400)
-      body_magic <- image_read(body_image)
+      body_magic <- image_read_svg(body_path, width=400)
       body_magic <- image_fill(body_magic, 'none', point=geometry_point(5,5), fuzz=20)
       if (!is.na(body_hands$x1) & !is.na(body_hands$y1)){
       body_magic <- image_fill(body_magic, input$skin, 
