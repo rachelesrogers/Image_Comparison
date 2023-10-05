@@ -52,6 +52,8 @@ server <- function(input, output) {
       head_path <- paste0("www/head",input$head_choice,".svg")
       body_path <- paste0("www/",input$clothes_choice,".svg")
       
+      # xmlTreeParse(gsub("'","",readLines("app/www/head1.svg")),asText = TRUE)
+      
       head_magic <- image_read_svg(head_path, width=400)
       head_magic <- image_fill(head_magic, 'none', point=geometry_point(5,5), fuzz=20)
       head_magic <- image_fill(head_magic, input$skin, point=geometry_point(187,177), fuzz=10)
