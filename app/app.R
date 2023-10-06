@@ -2,6 +2,9 @@ library(shiny)
 library(magick)
 library(colourpicker)
 library(rsvg)
+change_fill <- function(file_contents, new_fill = "#aaaaff") {
+  str_replace_all(file_contents, "fill:#[0-f]{6};", sprintf("fill:%s;", new_fill))
+}
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -42,38 +45,48 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
-  hand_location <- data.frame("character"=c("defendant", "scientist", "judge", "analyst", "inmate",
-                                            "lawyer"), 
-                              "x1"=c(298, NA, 306, 273, NA, NA), "y1"=c(375, NA, 406, 383, NA, NA),
-                              "x2"=c(125, NA, 92, 127, NA, NA),"y2"=c(392, NA, 410, 381, NA, NA))
-  
     output$characterPlot <- renderImage({
       
       head_path <- paste0("www/head",input$head_choice,".svg")
       body_path <- paste0("www/",input$clothes_choice,".svg")
       
-      # xmlTreeParse(gsub("'","",readLines("app/www/head1.svg")),asText = TRUE)
+      file_head <- as.data.frame(paste(gsub("'","",readLines(head_path)), collapse = ""))
       
-      head_magic <- image_read_svg(head_path, width=400)
-      head_magic <- image_fill(head_magic, 'none', point=geometry_point(5,5), fuzz=20)
-      head_magic <- image_fill(head_magic, input$skin, point=geometry_point(187,177), fuzz=10)
+      head_split <-file_head %>% str_split(">") %>% 
+        as.data.frame(col.names="svg_file") %>% filter(svg_file !="")
       
-      body_hands <- hand_location[hand_location$character==input$clothes_choice,]
+      head_split$svg_file <- paste0(head_split$svg_file, ">")
       
-      body_magic <- image_read_svg(body_path, width=400)
-      body_magic <- image_fill(body_magic, 'none', point=geometry_point(5,5), fuzz=20)
-      if (!is.na(body_hands$x1) & !is.na(body_hands$y1)){
-      body_magic <- image_fill(body_magic, input$skin, 
-                               point=geometry_point(body_hands$x1,body_hands$y1), fuzz=10)}
-      if (!is.na(body_hands$x2) & !is.na(body_hands$y2)){
-      body_magic <- image_fill(body_magic, input$skin, 
-                               point=geometry_point(body_hands$x2,body_hands$y2), fuzz=10)}
+      finding_row_head<-mapply(grepl, "skin",head_split)
+      
+      head_split[finding_row_head,] <- change_fill(head_split[finding_row_head,], input$skin)
+      
+      file_final_head <- apply(head_split,2,paste, collapse="")
+      
+      head_magic <- image_read_svg(file_final_head, width=400)
+      
+      
+      file_body <- as.data.frame(paste(gsub("'","",readLines(body_path)), collapse = ""))
+      
+      body_split <-file_body %>% str_split(">") %>% 
+        as.data.frame(col.names="svg_file") %>% filter(svg_file !="")
+      
+      body_split$svg_file <- paste0(body_split$svg_file, ">")
+      
+      finding_row_body<-mapply(grepl, "skin",body_split)
+      
+      body_split[finding_row_body,] <- change_fill(body_split[finding_row_body,], input$skin)
+      
+      file_final_body <- apply(body_split,2,paste, collapse="")
+      
+      
+      body_magic <- image_read_svg(file_final_body, width=400)
+      
       
       img <- c(body_magic, head_magic)
       
       combined <- image_flatten(img)
       
-      print(combined)
       
       tmpfile <- image_write(combined, tempfile(fileext='png'), format="png")
 
