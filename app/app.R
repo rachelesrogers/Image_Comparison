@@ -16,7 +16,7 @@ ui <- fluidPage(
     sidebarLayout(
         sidebarPanel(
           selectInput("color_item", "Change color of:",
-                      choices=c("skin", "hair", "eye",
+                      choices=c(NA, "skin", "hair", "eye",
                                 "clothes", "shirt","pants", "suit")),
             colourpicker::colourInput("color",
                         "Color:",
