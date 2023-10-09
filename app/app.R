@@ -15,9 +15,12 @@ ui <- fluidPage(
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
-            colourpicker::colourInput("skin",
-                        "Skin Tone:",
-                        "#bf8448"),
+          selectInput("color_item", "Change color of:",
+                      choices=c("skin", "hair", "eye",
+                                "clothes", "shirt","pants", "suit")),
+            colourpicker::colourInput("color",
+                        "Color:",
+                        "#fffaa4"),
             # sliderInput("eyes",
             #             "Eye Hue:",
             #             min = 0,
@@ -57,9 +60,9 @@ server <- function(input, output) {
       
       head_split$svg_file <- paste0(head_split$svg_file, ">")
       
-      finding_row_head<-mapply(grepl, "skin",head_split)
+      finding_row_head<-mapply(grepl, input$color_item,head_split)
       
-      head_split[finding_row_head,] <- change_fill(head_split[finding_row_head,], input$skin)
+      head_split[finding_row_head,] <- change_fill(head_split[finding_row_head,], input$color)
       
       file_final_head <- apply(head_split,2,paste, collapse="")
       
@@ -73,9 +76,9 @@ server <- function(input, output) {
       
       body_split$svg_file <- paste0(body_split$svg_file, ">")
       
-      finding_row_body<-mapply(grepl, "skin",body_split)
+      finding_row_body<-mapply(grepl, input$color_item,body_split)
       
-      body_split[finding_row_body,] <- change_fill(body_split[finding_row_body,], input$skin)
+      body_split[finding_row_body,] <- change_fill(body_split[finding_row_body,], input$color)
       
       file_final_body <- apply(body_split,2,paste, collapse="")
       
