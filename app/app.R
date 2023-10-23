@@ -21,16 +21,7 @@ ui <- fluidPage(
             colourpicker::colourInput("color",
                         "Color:",
                         "#fffaa4"),
-            # sliderInput("eyes",
-            #             "Eye Hue:",
-            #             min = 0,
-            #             max = 200,
-            #             value = 100),
-            # sliderInput("eye_bright",
-            #             "Eye Brightness:",
-            #             min = 40,
-            #             max = 150,
-            #             value = 100),
+
             selectInput("clothes_choice", "Select Outfit:",
                         choices=c("defendant", "scientist", "police",
                                   "judge", "analyst","inmate", "lawyer")),
@@ -48,12 +39,23 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
+  skin_tone <- reactiveVal()
+  
+  # observeEvent(input$head_choice, {
+  #   
+  # })
+  
+  head_path <- reactive({
+    paste0("www/head",input$head_choice,".svg")
+  })
+  
+  body_path <- reactive({
+    paste0("www/",input$clothes_choice,".svg")
+  })
+  
     output$characterPlot <- renderImage({
       
-      head_path <- paste0("www/head",input$head_choice,".svg")
-      body_path <- paste0("www/",input$clothes_choice,".svg")
-      
-      file_head <- as.data.frame(paste(gsub("'","",readLines(head_path)), collapse = ""))
+      file_head <- as.data.frame(paste(gsub("'","",readLines(head_path())), collapse = ""))
       
       head_split <-file_head %>% str_split(">") %>% 
         as.data.frame(col.names="svg_file") %>% filter(svg_file !="")
@@ -69,7 +71,7 @@ server <- function(input, output) {
       head_magic <- image_read_svg(file_final_head, width=400)
       
       
-      file_body <- as.data.frame(paste(gsub("'","",readLines(body_path)), collapse = ""))
+      file_body <- as.data.frame(paste(gsub("'","",readLines(body_path())), collapse = ""))
       
       body_split <-file_body %>% str_split(">") %>% 
         as.data.frame(col.names="svg_file") %>% filter(svg_file !="")
