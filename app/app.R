@@ -26,7 +26,7 @@ ui <- fluidPage(
                         choices=c("defendant", "scientist", "police",
                                   "judge", "analyst","inmate", "lawyer")),
             selectInput("head_choice", "Select Head:",
-                        choices=c("1", "2","3","4","5","6","7","8","9", "10", "11"))
+                        choices=c("1", "2","3","4","5","6","7","8","9", "10", "11", "12"))
         ),
 
         # Show a plot of the generated distribution
