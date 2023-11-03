@@ -2,6 +2,8 @@ library(shiny)
 library(magick)
 library(colourpicker)
 library(rsvg)
+library(stringr)
+library(dplyr)
 change_fill <- function(file_contents, new_fill = "#aaaaff") {
   str_replace_all(file_contents, "fill:#[0-f]{6};", sprintf("fill:%s;", new_fill))
 }
@@ -26,7 +28,7 @@ ui <- fluidPage(
                         choices=c("defendant", "scientist", "police",
                                   "judge", "analyst","inmate", "lawyer")),
             selectInput("head_choice", "Select Head:",
-                        choices=c("1", "2","3","4","5","6","7","8","9", "10", "11", "12"))
+                        choices=c("1", "2","3","4","5","6","7","8","9", "10", "11", "12", "13"))
         ),
 
         # Show a plot of the generated distribution
@@ -48,7 +50,7 @@ server <- function(input, output) {
   head_path <- reactive({
     paste0("www/head",input$head_choice,".svg")
   })
-  
+
   body_path <- reactive({
     paste0("www/",input$clothes_choice,".svg")
   })
