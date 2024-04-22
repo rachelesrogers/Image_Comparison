@@ -50,6 +50,12 @@ server <- function(input, output) {
     paste0("www/",input$clothes_choice,".svg")
   })
   
+  
+  
+  clothes_selection <- reactive({
+    fig_info %>% filter(Part == "clothes", Item == input$clothes_choice)
+  })
+  
     output$characterPlot <- renderImage({
       
       file_head <- as.data.frame(paste(gsub("'","",readLines(head_path())), collapse = ""))
@@ -75,10 +81,20 @@ server <- function(input, output) {
       
       body_split$svg_file <- paste0(body_split$svg_file, ">")
       
+      file_final_body <- body_split
+
+      for (i in 1:length(clothes_selection()$Item)){
+        finding_row_body<-mapply(grepl, clothes_selection()$Item[i],body_split)
+
+        # body_split[finding_row_body,] <- change_fill(body_split[finding_row_body,],
+        #                                              clothes_selection()$Color[i])
+        # file_final_body <- apply(body_split,2,paste, collapse="")
+      }
+      
       finding_row_body<-mapply(grepl, input$color_item,body_split)
-      
+
       body_split[finding_row_body,] <- change_fill(body_split[finding_row_body,], input$color)
-      
+
       file_final_body <- apply(body_split,2,paste, collapse="")
       
       
