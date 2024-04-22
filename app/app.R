@@ -8,27 +8,28 @@ change_fill <- function(file_contents, new_fill = "#aaaaff") {
   str_replace_all(file_contents, "fill:#[0-f]{6};", sprintf("fill:%s;", new_fill))
 }
 
+fig_info <- read.csv("figure_information.csv")
+
 # Define UI for application that draws a histogram
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Character Randomizer"),
+    titlePanel("Character Customization"),
 
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
           selectInput("color_item", "Change color of:",
                       choices=c(NA, "skin", "hair", "eye",
-                                "clothes", "shirt","pants", "suit")),
+                                "shirt","pants", "suit")),
             colourpicker::colourInput("color",
                         "Color:",
-                        "#fffaa4"),
+                        "#bd8347"),
 
             selectInput("clothes_choice", "Select Outfit:",
-                        choices=c("defendant", "scientist", "police",
-                                  "judge", "analyst","inmate", "lawyer")),
+                        choices= unique(fig_info[fig_info$Part=="clothes",]$Label)),
             selectInput("head_choice", "Select Head:",
-                        choices=c("1", "2","3","4","5","6","7","8","9", "10", "11", "12", "13", "14"))
+                        choices= unique(fig_info[fig_info$Part=="head",]$Label))
         ),
 
         # Show a plot of the generated distribution
@@ -40,12 +41,6 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-  
-  skin_tone <- reactiveVal()
-  
-  # observeEvent(input$head_choice, {
-  #   
-  # })
   
   head_path <- reactive({
     paste0("www/head",input$head_choice,".svg")
