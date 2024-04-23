@@ -176,7 +176,7 @@ server <- function(input, output) {
       
       tmpfile <- image_write(combined, tempfile(fileext='png'), format="png")
 
-      list(src = tmpfile, contentType = "image/png", width="70%")})
+      list(src = tmpfile, contentType = "image/png", width="50%")})
       
     
       
@@ -186,7 +186,7 @@ server <- function(input, output) {
         filename = "Character.png",
         content = function(file) {
           png(file)
-          renderImage(image_processing())
+          image_processing()$src
           dev.off()
         })    
 }
