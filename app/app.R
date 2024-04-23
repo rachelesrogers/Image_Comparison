@@ -19,12 +19,12 @@ ui <- fluidPage(
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
-          selectInput("color_item", "Change color of:",
-                      choices=c(NA, "skin", "hair", "eye",
-                                "shirt","pants", "suit")),
-            colourpicker::colourInput("color",
-                        "Color:",
-                        "#bd8347"),
+          uiOutput('skinselect'),
+          uiOutput('hairselect'),
+          uiOutput('eyeselect'),
+          uiOutput('shirtselect'),
+          uiOutput('pantsselect'),
+          uiOutput('suitselect'),
 
             selectInput("clothes_choice", "Select Outfit:",
                         choices= unique(fig_info[fig_info$Part=="clothes",]$Label)),
@@ -53,8 +53,56 @@ server <- function(input, output) {
   
   
   clothes_selection <- reactive({
-    fig_info %>% filter(Part == "clothes", Item == input$clothes_choice)
+    return(fig_info %>% filter(Part == "clothes", Label == input$clothes_choice))
   })
+  
+  head_selection <- reactive({
+    return(fig_info %>% filter(Part == "head", Label == input$head_choice))
+  })
+  
+  default_eye <- reactive(head_selection()[head_selection()$Item=="eye",]$Color)
+  
+  output$eyeselect <- renderUI({colourpicker::colourInput("eye",
+                            "Eye Color:",
+                            default_eye())
+  })
+  
+  default_hair <- reactive(head_selection()[head_selection()$Item=="hair",]$Color)
+  
+  output$hairselect <- renderUI({colourpicker::colourInput("hair",
+                                                          "Hair Color:",
+                                                          default_hair())
+  })
+  
+  default_skin <- reactive(head_selection()[head_selection()$Item=="skin",]$Color)
+  
+  output$skinselect <- renderUI({colourpicker::colourInput("skin",
+                                                           "Skin Color:",
+                                                           default_skin())
+  })
+  
+  default_shirt <- reactive(clothes_selection()[clothes_selection()$Item=="shirt",]$Color)
+  
+  output$shirtselect <- renderUI({colourpicker::colourInput("shirt",
+                                                           "Shirt Color:",
+                                                           default_shirt())
+  })
+  
+  default_pants <- reactive(clothes_selection()[clothes_selection()$Item=="pants",]$Color)
+  
+  output$pantsselect <- renderUI({colourpicker::colourInput("pants",
+                                                            "Pants Color:",
+                                                            default_pants())
+  })
+  
+  default_suit <- reactive(clothes_selection()[clothes_selection()$Item=="suit",]$Color)
+  
+  output$suitselect <- renderUI({
+    colourpicker::colourInput("suit",
+                                                            "Suit Color:",
+                                                            default_suit())
+  })
+  
   
     output$characterPlot <- renderImage({
       
@@ -65,14 +113,21 @@ server <- function(input, output) {
       
       head_split$svg_file <- paste0(head_split$svg_file, ">")
       
-      finding_row_head<-mapply(grepl, input$color_item,head_split)
+      finding_row_head<-mapply(grepl, "skin",head_split)
       
-      head_split[finding_row_head,] <- change_fill(head_split[finding_row_head,], input$color)
+      head_split[finding_row_head,] <- change_fill(head_split[finding_row_head,], input$skin)
+      
+      finding_row_head<-mapply(grepl, "hair",head_split)
+      
+      head_split[finding_row_head,] <- change_fill(head_split[finding_row_head,], input$hair)
+      
+      finding_row_head<-mapply(grepl, "eye",head_split)
+      
+      head_split[finding_row_head,] <- change_fill(head_split[finding_row_head,], input$eye)
       
       file_final_head <- apply(head_split,2,paste, collapse="")
       
       head_magic <- image_read_svg(file_final_head, width=400)
-      
       
       file_body <- as.data.frame(paste(gsub("'","",readLines(body_path())), collapse = ""))
       
@@ -81,19 +136,22 @@ server <- function(input, output) {
       
       body_split$svg_file <- paste0(body_split$svg_file, ">")
       
-      file_final_body <- body_split
-
-      for (i in 1:length(clothes_selection()$Item)){
-        finding_row_body<-mapply(grepl, clothes_selection()$Item[i],body_split)
-
-        # body_split[finding_row_body,] <- change_fill(body_split[finding_row_body,],
-        #                                              clothes_selection()$Color[i])
-        # file_final_body <- apply(body_split,2,paste, collapse="")
-      }
       
-      finding_row_body<-mapply(grepl, input$color_item,body_split)
+      finding_row_body<-mapply(grepl, "skin",body_split)
 
-      body_split[finding_row_body,] <- change_fill(body_split[finding_row_body,], input$color)
+      body_split[finding_row_body,] <- change_fill(body_split[finding_row_body,], input$skin)
+      
+      finding_row_body<-mapply(grepl, "shirt",body_split)
+      
+      body_split[finding_row_body,] <- change_fill(body_split[finding_row_body,], input$shirt)
+      
+      finding_row_body<-mapply(grepl, "pants",body_split)
+      
+      body_split[finding_row_body,] <- change_fill(body_split[finding_row_body,], input$pants)
+      
+      finding_row_body<-mapply(grepl, "suit",body_split)
+      
+      body_split[finding_row_body,] <- change_fill(body_split[finding_row_body,], input$suit)
 
       file_final_body <- apply(body_split,2,paste, collapse="")
       
