@@ -31,7 +31,8 @@ ui <- fluidPage(
             selectInput("clothes_choice", "Select Outfit:",
                         choices= unique(fig_info[fig_info$Part=="clothes",]$Label)),
             selectInput("head_choice", "Select Head:",
-                        choices= unique(fig_info[fig_info$Part=="head",]$Label))
+                        choices= unique(fig_info[fig_info$Part=="head",]$Label)),
+          downloadButton("download", "Download Character")
         ),
 
         # Show a plot of the generated distribution
@@ -180,6 +181,14 @@ server <- function(input, output) {
     
       
       output$characterPlot <- renderImage({image_processing()}, deleteFile = TRUE)
+      
+      output$download <- downloadHandler(
+        filename = "Character.png",
+        content = function(file) {
+          png(file)
+          renderImage(image_processing())
+          dev.off()
+        })    
 }
 
 # Run the application 
