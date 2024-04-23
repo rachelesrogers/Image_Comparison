@@ -9,6 +9,7 @@ change_fill <- function(file_contents, new_fill = "#aaaaff") {
 }
 
 fig_info <- read.csv("figure_information.csv")
+input_info <- read.csv("input_information.csv")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -25,6 +26,7 @@ ui <- fluidPage(
           uiOutput('shirtselect'),
           uiOutput('pantsselect'),
           uiOutput('suitselect'),
+          # uiOutput('color_inputs'),
 
             selectInput("clothes_choice", "Select Outfit:",
                         choices= unique(fig_info[fig_info$Part=="clothes",]$Label)),
@@ -60,13 +62,17 @@ server <- function(input, output) {
     return(fig_info %>% filter(Part == "head", Label == input$head_choice))
   })
   
+  possible_colors <- reactive({
+    return(unique(c(head_selection()$Item, clothes_selection()$Item)))
+  })
+  
   default_eye <- reactive(head_selection()[head_selection()$Item=="eye",]$Color)
   
   output$eyeselect <- renderUI({colourpicker::colourInput("eye",
                             "Eye Color:",
                             default_eye())
   })
-  
+
   default_hair <- reactive(head_selection()[head_selection()$Item=="hair",]$Color)
   
   output$hairselect <- renderUI({colourpicker::colourInput("hair",
@@ -98,13 +104,16 @@ server <- function(input, output) {
   default_suit <- reactive(clothes_selection()[clothes_selection()$Item=="suit",]$Color)
   
   output$suitselect <- renderUI({
-    colourpicker::colourInput("suit",
-                                                            "Suit Color:",
-                                                            default_suit())
+    colourpicker::colourInput("suit", "Suit Color:", default_suit())
   })
   
+  # output$color_inputs <- renderUI({
+  #   list(paste(t(input_info$Question),collapse = ",br(),"))
+  #   # list(input_info$Question)[[1]]
+  # })
   
-    output$characterPlot <- renderImage({
+  
+    image_processing <- reactive({
       
       file_head <- as.data.frame(paste(gsub("'","",readLines(head_path())), collapse = ""))
       
@@ -166,9 +175,11 @@ server <- function(input, output) {
       
       tmpfile <- image_write(combined, tempfile(fileext='png'), format="png")
 
-      list(src = tmpfile, contentType = "image/png", width="70%")
+      list(src = tmpfile, contentType = "image/png", width="70%")})
       
-    }, deleteFile = TRUE)
+    
+      
+      output$characterPlot <- renderImage({image_processing()}, deleteFile = TRUE)
 }
 
 # Run the application 
