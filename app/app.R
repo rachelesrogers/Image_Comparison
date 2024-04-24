@@ -180,14 +180,13 @@ server <- function(input, output) {
       
     
       
-      output$characterPlot <- renderImage({image_processing()}, deleteFile = TRUE)
+      output$characterPlot <- renderImage({image_processing()}, deleteFile = FALSE)
       
       output$download <- downloadHandler(
         filename = "Character.png",
         content = function(file) {
-          png(file)
-          image_processing()$src
-          dev.off()
+          img <- image_processing()$src
+          file.copy(img, file)
         })    
 }
 
