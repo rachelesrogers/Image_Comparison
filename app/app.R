@@ -9,7 +9,7 @@ change_fill <- function(file_contents, new_fill = "#aaaaff") {
 }
 
 fig_info <- read.csv("figure_information.csv")
-input_info <- read.csv("input_information.csv")
+# input_info <- read.csv("input_information.csv")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -20,18 +20,20 @@ ui <- fluidPage(
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
+          selectInput("clothes_choice", "Select Outfit:",
+                      choices= unique(fig_info[fig_info$Part=="clothes",]$Label)),
+          selectInput("head_choice", "Select Head:",
+                      choices= unique(fig_info[fig_info$Part=="head",]$Label)),
           uiOutput('skinselect'),
           uiOutput('hairselect'),
           uiOutput('eyeselect'),
-          uiOutput('shirtselect'),
-          uiOutput('pantsselect'),
-          uiOutput('suitselect'),
+          conditionalPanel(condition= "output.vis_shirt",
+          uiOutput('shirtselect')),
+          conditionalPanel(condition= "output.vis_pants",
+          uiOutput('pantsselect')),
+          conditionalPanel(condition= "output.vis_suit",
+          uiOutput('suitselect')),
           # uiOutput('color_inputs'),
-
-            selectInput("clothes_choice", "Select Outfit:",
-                        choices= unique(fig_info[fig_info$Part=="clothes",]$Label)),
-            selectInput("head_choice", "Select Head:",
-                        choices= unique(fig_info[fig_info$Part=="head",]$Label)),
           downloadButton("download", "Download Character")
         ),
 
@@ -58,6 +60,18 @@ server <- function(input, output) {
   clothes_selection <- reactive({
     return(fig_info %>% filter(Part == "clothes", Label == input$clothes_choice))
   })
+  
+  output$vis_shirt <- reactive({'shirt' %in% clothes_selection()$Item})
+  
+  outputOptions(output, "vis_shirt", suspendWhenHidden = FALSE)
+  
+  output$vis_pants <- reactive({'pants' %in% clothes_selection()$Item})
+  
+  outputOptions(output, "vis_pants", suspendWhenHidden = FALSE)
+  
+  output$vis_suit <- reactive({'suit' %in% clothes_selection()$Item})
+  
+  outputOptions(output, "vis_suit", suspendWhenHidden = FALSE)
   
   head_selection <- reactive({
     return(fig_info %>% filter(Part == "head", Label == input$head_choice))
