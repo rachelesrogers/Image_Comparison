@@ -1,7 +1,7 @@
 library(shiny)
 library(magick)
 library(colourpicker)
-library(rsvg)
+# library(rsvg)
 library(stringr)
 library(dplyr)
 change_fill <- function(file_contents, new_fill = "#aaaaff") {
