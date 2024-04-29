@@ -1,8 +1,11 @@
 library(shiny)
-library(magick)
+# library(magick)
 library(colourpicker)
 library(stringr)
 library(dplyr)
+if (FALSE) {
+  library(magick)
+}
 
 change_fill <- function(file_contents, new_fill = "#aaaaff") {
   str_replace_all(file_contents, "fill:#[0-f]{6};", sprintf("fill:%s;", new_fill))
