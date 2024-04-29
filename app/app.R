@@ -1,5 +1,4 @@
 library(shiny)
-library(rsvg)
 library(magick)
 library(colourpicker)
 library(stringr)
