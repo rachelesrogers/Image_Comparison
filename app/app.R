@@ -1,6 +1,6 @@
 library(shiny)
 # library(magick)
-library(colourpicker)
+# library(colourpicker)
 library(stringr)
 library(dplyr)
 # if (FALSE) {
@@ -86,44 +86,44 @@ server <- function(input, output) {
   
   default_eye <- reactive(head_selection()[head_selection()$Item=="eye",]$Color)
   
-  output$eyeselect <- renderUI({colourpicker::colourInput("eye",
-                            "Eye Color:",
-                            default_eye())
-  })
+  # output$eyeselect <- renderUI({colourpicker::colourInput("eye",
+  #                           "Eye Color:",
+  #                           default_eye())
+  # })
 
   default_hair <- reactive(head_selection()[head_selection()$Item=="hair",]$Color)
   
-  output$hairselect <- renderUI({colourpicker::colourInput("hair",
-                                                          "Hair Color:",
-                                                          default_hair())
-  })
+  # output$hairselect <- renderUI({colourpicker::colourInput("hair",
+  #                                                         "Hair Color:",
+  #                                                         default_hair())
+  # })
   
   default_skin <- reactive(head_selection()[head_selection()$Item=="skin",]$Color)
   
-  output$skinselect <- renderUI({colourpicker::colourInput("skin",
-                                                           "Skin Color:",
-                                                           default_skin())
-  })
+  # output$skinselect <- renderUI({colourpicker::colourInput("skin",
+  #                                                          "Skin Color:",
+  #                                                          default_skin())
+  # })
   
   default_shirt <- reactive(clothes_selection()[clothes_selection()$Item=="shirt",]$Color)
   
-  output$shirtselect <- renderUI({colourpicker::colourInput("shirt",
-                                                           "Shirt Color:",
-                                                           default_shirt())
-  })
+  # output$shirtselect <- renderUI({colourpicker::colourInput("shirt",
+  #                                                          "Shirt Color:",
+  #                                                          default_shirt())
+  # })
   
   default_pants <- reactive(clothes_selection()[clothes_selection()$Item=="pants",]$Color)
   
-  output$pantsselect <- renderUI({colourpicker::colourInput("pants",
-                                                            "Pants Color:",
-                                                            default_pants())
-  })
+  # output$pantsselect <- renderUI({colourpicker::colourInput("pants",
+  #                                                           "Pants Color:",
+  #                                                           default_pants())
+  # })
   
   default_suit <- reactive(clothes_selection()[clothes_selection()$Item=="suit",]$Color)
   
-  output$suitselect <- renderUI({
-    colourpicker::colourInput("suit", "Suit Color:", default_suit())
-  })
+  # output$suitselect <- renderUI({
+  #   colourpicker::colourInput("suit", "Suit Color:", default_suit())
+  # })
   
   # output$color_inputs <- renderUI({
   #   list(paste(t(input_info$Question),collapse = ",br(),"))
