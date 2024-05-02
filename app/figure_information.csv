@@ -3,6 +3,7 @@ head,1,skin,#bd8347
 head,1,hair,#1b0f03
 head,1,eye,#984b11
 head,2,skin,#fbd7c8
+head,2,hair3,#ddddd5
 head,2,hair,#ececec
 head,2,eye,#3f84e4
 clothes,defendant,skin,#bd8347
@@ -13,9 +14,11 @@ head,3,skin,#fae3c7
 head,3,hair,#a45806
 head,3,eye,#c46122
 head,4,skin,#e9d8c5
+head,4,hair3,#2a2a26
 head,4,hair,#31302b
 head,4,eye,#8d4e1c
 head,5,skin,#edd9c1
+head,5,hair3,#9e3500
 head,5,hair,#d8610e
 head,5,eye,#14653a
 clothes,inmate,skin,#edd9c1
@@ -37,3 +40,16 @@ clothes,police,shoes_accessories,#444748
 clothes,scientist,pants,#0e448d
 clothes,scientist,shirt,#ac5008
 clothes,scientist,coat,#f0ece1
+head,6,skin,#bd8247
+head,6,hair2,#9a642e
+head,6,hair3,#533a24
+head,6,hair,#40250a
+head,6,eye,#b56415
+head,7,skin,#8a3e06
+head,7,hair,#502d13
+head,7,hair2,#6d4527
+head,7,hair3,#261409
+head,7,eye,#502d13
+head,8,skin,#ecd8c1
+head,8,hair,#cac72c
+head,8,eye,#1d6f44

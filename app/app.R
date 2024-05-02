@@ -1,6 +1,6 @@
 library(shiny)
-# library(magick)
-# library(colourpicker)
+library(magick)
+library(colourpicker)
 library(stringr)
 library(dplyr)
 # if (FALSE) {
@@ -29,6 +29,10 @@ ui <- fluidPage(
                       choices= unique(fig_info[fig_info$Part=="head",]$Label)),
           uiOutput('skinselect'),
           uiOutput('hairselect'),
+          conditionalPanel(condition= "output.vis_hair2",
+                           uiOutput('hair2select')),
+          conditionalPanel(condition= "output.vis_hair3",
+                           uiOutput('hair3select')),
           uiOutput('eyeselect'),
           conditionalPanel(condition= "output.vis_shirt",
           uiOutput('shirtselect')),
@@ -80,50 +84,73 @@ server <- function(input, output) {
     return(fig_info %>% filter(Part == "head", Label == input$head_choice))
   })
   
+  output$vis_hair2 <- reactive({'hair2' %in% head_selection()$Item})
+  
+  outputOptions(output, "vis_hair2", suspendWhenHidden = FALSE)
+  
+  output$vis_hair3 <- reactive({'hair3' %in% head_selection()$Item})
+  
+  outputOptions(output, "vis_hair3", suspendWhenHidden = FALSE)
+  
   possible_colors <- reactive({
     return(unique(c(head_selection()$Item, clothes_selection()$Item)))
   })
   
   default_eye <- reactive(head_selection()[head_selection()$Item=="eye",]$Color)
   
-  # output$eyeselect <- renderUI({colourpicker::colourInput("eye",
-  #                           "Eye Color:",
-  #                           default_eye())
-  # })
+  output$eyeselect <- renderUI({colourpicker::colourInput("eye",
+                            "Eye Color:",
+                            default_eye())
+  })
 
   default_hair <- reactive(head_selection()[head_selection()$Item=="hair",]$Color)
   
-  # output$hairselect <- renderUI({colourpicker::colourInput("hair",
-  #                                                         "Hair Color:",
-  #                                                         default_hair())
-  # })
+  output$hairselect <- renderUI({colourpicker::colourInput("hair",
+                                                          "Hair Color:",
+                                                          default_hair())
+  })
+  
+  default_hair2 <- reactive(head_selection()[head_selection()$Item=="hair2",]$Color)
+  
+  output$hair2select <- renderUI({colourpicker::colourInput("hair2",
+                                                           "Secondary Hair Color:",
+                                                           default_hair2())
+  })
+  
+  default_hair3 <- reactive(head_selection()[head_selection()$Item=="hair3",]$Color)
+  
+  output$hair3select <- renderUI({colourpicker::colourInput("hair3",
+                                                            "Hair Line Color:",
+                                                            default_hair3())
+  })
+  
   
   default_skin <- reactive(head_selection()[head_selection()$Item=="skin",]$Color)
   
-  # output$skinselect <- renderUI({colourpicker::colourInput("skin",
-  #                                                          "Skin Color:",
-  #                                                          default_skin())
-  # })
+  output$skinselect <- renderUI({colourpicker::colourInput("skin",
+                                                           "Skin Color:",
+                                                           default_skin())
+  })
   
   default_shirt <- reactive(clothes_selection()[clothes_selection()$Item=="shirt",]$Color)
   
-  # output$shirtselect <- renderUI({colourpicker::colourInput("shirt",
-  #                                                          "Shirt Color:",
-  #                                                          default_shirt())
-  # })
+  output$shirtselect <- renderUI({colourpicker::colourInput("shirt",
+                                                           "Shirt Color:",
+                                                           default_shirt())
+  })
   
   default_pants <- reactive(clothes_selection()[clothes_selection()$Item=="pants",]$Color)
   
-  # output$pantsselect <- renderUI({colourpicker::colourInput("pants",
-  #                                                           "Pants Color:",
-  #                                                           default_pants())
-  # })
+  output$pantsselect <- renderUI({colourpicker::colourInput("pants",
+                                                            "Pants Color:",
+                                                            default_pants())
+  })
   
   default_suit <- reactive(clothes_selection()[clothes_selection()$Item=="suit",]$Color)
   
-  # output$suitselect <- renderUI({
-  #   colourpicker::colourInput("suit", "Suit Color:", default_suit())
-  # })
+  output$suitselect <- renderUI({
+    colourpicker::colourInput("suit", "Suit Color:", default_suit())
+  })
   
   # output$color_inputs <- renderUI({
   #   list(paste(t(input_info$Question),collapse = ",br(),"))
@@ -144,9 +171,17 @@ server <- function(input, output) {
       
       head_split[finding_row_head,] <- change_fill(head_split[finding_row_head,], input$skin)
       
-      finding_row_head<-mapply(grepl, "hair",head_split)
+      finding_row_head<-mapply(grepl, "hair1",head_split)
       
       head_split[finding_row_head,] <- change_fill(head_split[finding_row_head,], input$hair)
+      
+      finding_row_head<-mapply(grepl, "hair2",head_split)
+      
+      head_split[finding_row_head,] <- change_fill(head_split[finding_row_head,], input$hair2)
+      
+      finding_row_head<-mapply(grepl, "hair_lines",head_split)
+      
+      head_split[finding_row_head,] <- change_fill(head_split[finding_row_head,], input$hair3)
       
       finding_row_head<-mapply(grepl, "eye",head_split)
       
