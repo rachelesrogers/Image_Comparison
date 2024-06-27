@@ -3,6 +3,7 @@ library(magick)
 library(colourpicker)
 library(stringr)
 library(dplyr)
+library(rsvg)
 # if (FALSE) {
 #   library(magick)
 # }
@@ -14,13 +15,11 @@ change_fill <- function(file_contents, new_fill = "#aaaaff") {
 fig_info <- read.csv("figure_information.csv")
 # input_info <- read.csv("input_information.csv")
 
-# Define UI for application that draws a histogram
 ui <- fluidPage(
 
     # Application title
     titlePanel("Character Customization"),
 
-    # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
           selectInput("clothes_choice", "Select Outfit:",
@@ -33,6 +32,8 @@ ui <- fluidPage(
                            uiOutput('hair2select')),
           conditionalPanel(condition= "output.vis_hair3",
                            uiOutput('hair3select')),
+          conditionalPanel(condition= "output.vis_glasses",
+                           uiOutput('glassesselect')),
           uiOutput('eyeselect'),
           conditionalPanel(condition= "output.vis_shirt",
           uiOutput('shirtselect')),
@@ -40,6 +41,8 @@ ui <- fluidPage(
           uiOutput('pantsselect')),
           conditionalPanel(condition= "output.vis_suit",
           uiOutput('suitselect')),
+          conditionalPanel(condition= "output.vis_tie",
+                           uiOutput('tieselect')),
           # uiOutput('color_inputs'),
           downloadButton("download", "Download Character")
         ),
@@ -80,6 +83,10 @@ server <- function(input, output) {
   
   outputOptions(output, "vis_suit", suspendWhenHidden = FALSE)
   
+  output$vis_tie <- reactive({'tie' %in% clothes_selection()$Item})
+  
+  outputOptions(output, "vis_tie", suspendWhenHidden = FALSE)
+  
   head_selection <- reactive({
     return(fig_info %>% filter(Part == "head", Label == input$head_choice))
   })
@@ -91,6 +98,10 @@ server <- function(input, output) {
   output$vis_hair3 <- reactive({'hair3' %in% head_selection()$Item})
   
   outputOptions(output, "vis_hair3", suspendWhenHidden = FALSE)
+  
+  output$vis_glasses <- reactive({'glasses' %in% head_selection()$Item})
+  
+  outputOptions(output, "vis_glasses", suspendWhenHidden = FALSE)
   
   possible_colors <- reactive({
     return(unique(c(head_selection()$Item, clothes_selection()$Item)))
@@ -105,51 +116,56 @@ server <- function(input, output) {
 
   default_hair <- reactive(head_selection()[head_selection()$Item=="hair",]$Color)
   
-  output$hairselect <- renderUI({colourpicker::colourInput("hair",
-                                                          "Hair Color:",
-                                                          default_hair())
+  output$hairselect <- renderUI({
+    colourpicker::colourInput("hair", "Hair Color:", default_hair())
   })
   
   default_hair2 <- reactive(head_selection()[head_selection()$Item=="hair2",]$Color)
   
-  output$hair2select <- renderUI({colourpicker::colourInput("hair2",
-                                                           "Secondary Hair Color:",
-                                                           default_hair2())
+  output$hair2select <- renderUI({
+    colourpicker::colourInput("hair2", "Secondary Hair Color:", default_hair2())
   })
   
   default_hair3 <- reactive(head_selection()[head_selection()$Item=="hair3",]$Color)
   
-  output$hair3select <- renderUI({colourpicker::colourInput("hair3",
-                                                            "Hair Line Color:",
-                                                            default_hair3())
+  output$hair3select <- renderUI({
+    colourpicker::colourInput("hair3", "Hair Line Color:", default_hair3())
   })
   
+  default_glasses <- reactive(head_selection()[head_selection()$Item=="glasses",]$Color)
+  
+  output$glassesselect <- renderUI({
+    colourpicker::colourInput("glasses", "Glasses Color:", default_glasses())
+  })
   
   default_skin <- reactive(head_selection()[head_selection()$Item=="skin",]$Color)
   
-  output$skinselect <- renderUI({colourpicker::colourInput("skin",
-                                                           "Skin Color:",
-                                                           default_skin())
+  output$skinselect <- renderUI({
+    colourpicker::colourInput("skin", "Skin Color:", default_skin())
   })
   
   default_shirt <- reactive(clothes_selection()[clothes_selection()$Item=="shirt",]$Color)
   
-  output$shirtselect <- renderUI({colourpicker::colourInput("shirt",
-                                                           "Shirt Color:",
-                                                           default_shirt())
+  output$shirtselect <- renderUI({
+    colourpicker::colourInput("shirt", "Shirt Color:", default_shirt())
   })
   
   default_pants <- reactive(clothes_selection()[clothes_selection()$Item=="pants",]$Color)
   
-  output$pantsselect <- renderUI({colourpicker::colourInput("pants",
-                                                            "Pants Color:",
-                                                            default_pants())
+  output$pantsselect <- renderUI({
+    colourpicker::colourInput("pants", "Pants Color:", default_pants())
   })
   
   default_suit <- reactive(clothes_selection()[clothes_selection()$Item=="suit",]$Color)
   
   output$suitselect <- renderUI({
     colourpicker::colourInput("suit", "Suit Color:", default_suit())
+  })
+  
+  default_tie <- reactive(clothes_selection()[clothes_selection()$Item=="tie",]$Color)
+  
+  output$tieselect <- renderUI({
+    colourpicker::colourInput("tie", "Tie Color:", default_tie())
   })
   
   # output$color_inputs <- renderUI({
@@ -183,6 +199,10 @@ server <- function(input, output) {
       
       head_split[finding_row_head,] <- change_fill(head_split[finding_row_head,], input$hair3)
       
+      finding_row_head<-mapply(grepl, "glasses",head_split)
+      
+      head_split[finding_row_head,] <- change_fill(head_split[finding_row_head,], input$glasses)
+      
       finding_row_head<-mapply(grepl, "eye",head_split)
       
       head_split[finding_row_head,] <- change_fill(head_split[finding_row_head,], input$eye)
@@ -214,6 +234,10 @@ server <- function(input, output) {
       finding_row_body<-mapply(grepl, "suit",body_split)
       
       body_split[finding_row_body,] <- change_fill(body_split[finding_row_body,], input$suit)
+      
+      finding_row_body<-mapply(grepl, "tie",body_split)
+      
+      body_split[finding_row_body,] <- change_fill(body_split[finding_row_body,], input$tie)
 
       file_final_body <- apply(body_split,2,paste, collapse="")
       
